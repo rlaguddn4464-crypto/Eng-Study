@@ -1,8 +1,11 @@
 {
-  "name": "축구 구단 의전 영어 iPhone",
+  "id": "./",
+  "name": "축구 구단 의전 영어",
   "short_name": "의전 영어",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#f4f6f8",
   "theme_color": "#111827",
   "description": "아이폰용 축구 구단 국제업무 의전 영어 학습 앱",
@@ -10,13 +13,14 @@
     {
       "src": "icon-180.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
