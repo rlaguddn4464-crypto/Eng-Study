@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151515">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="의전 영어">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>축구 구단 의전 영어</title>
+<style>
+:root {
+  --bg:#f4f5f7; --card:#fff; --text:#171717; --muted:#6b7280;
+  --line:#e5e7eb; --accent:#111827; --soft:#eef0f3;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input{font:inherit}
+.header{position:sticky;top:0;z-index:20;background:rgba(244,245,247,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.header-inner{max-width:760px;margin:auto;padding:calc(14px + env(safe-area-inset-top)) 16px 12px}
+.title-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{font-size:22px;margin:0;letter-spacing:-.02em}
+.subtitle{font-size:13px;color:var(--muted);margin-top:4px}
+.icon-btn{border:0;background:var(--card);width:42px;height:42px;border-radius:13px;box-shadow:0 1px 4px rgba(0,0,0,.08);cursor:pointer}
+.search{margin-top:13px;display:flex;gap:8px}
+.search input{width:100%;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px 14px;outline:none}
+.search input:focus{border-color:#9ca3af}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line);background:var(--card);padding:9px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;font-size:14px}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+main{max-width:760px;margin:auto;padding:16px 16px 100px}
+.stats{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;margin:2px 2px 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;margin-bottom:11px;overflow:hidden;box-shadow:0 2px 7px rgba(0,0,0,.035)}
+.card-top{display:grid;grid-template-columns:1fr auto;gap:10px;padding:16px;cursor:pointer}
+.meta{font-size:12px;color:var(--muted);margin-bottom:7px}
+.en{font-size:17px;font-weight:700;line-height:1.42;letter-spacing:-.01em}
+.actions{display:flex;align-items:flex-start;gap:5px}
+.small-btn{border:0;background:var(--soft);width:38px;height:38px;border-radius:12px;cursor:pointer;font-size:17px}
+.small-btn.starred{background:#fff4cc}
+.reveal{display:none;border-top:1px solid var(--line);padding:15px 16px 17px}
+.card.open .reveal{display:block}
+.ko{font-size:16px;line-height:1.55;font-weight:650}
+.words{margin-top:11px;background:var(--soft);border-radius:12px;padding:11px 12px;color:#4b5563;font-size:14px;line-height:1.55}
+.tap-hint{font-size:12px;color:#9ca3af;margin-top:9px}
+.empty{text-align:center;color:var(--muted);padding:60px 10px}
+.bottom{position:fixed;bottom:0;left:0;right:0;z-index:25;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 12px calc(8px + env(safe-area-inset-bottom))}
+.bottom-inner{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nav-btn{border:0;background:transparent;border-radius:12px;padding:8px 4px;color:var(--muted);cursor:pointer;font-size:12px}
+.nav-btn strong{display:block;font-size:20px;line-height:1.1;margin-bottom:3px}
+.nav-btn.active{background:var(--soft);color:var(--text)}
+.modal-back{display:none;position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);padding:20px;align-items:center;justify-content:center}
+.modal-back.show{display:flex}
+.modal{background:#fff;max-width:500px;width:100%;border-radius:22px;padding:20px;max-height:85vh;overflow:auto}
+.modal h2{margin:0 0 12px;font-size:20px}
+.modal p,.modal li{line-height:1.6;color:#4b5563}
+.close{width:100%;border:0;background:var(--accent);color:white;padding:13px;border-radius:13px;cursor:pointer;margin-top:10px}
+.install-banner{display:none;background:#111827;color:#fff;border-radius:16px;padding:14px 15px;margin-bottom:13px}
+.install-banner button{border:0;background:#fff;color:#111827;border-radius:9px;padding:7px 10px;margin-left:8px;cursor:pointer}
+@media (min-width:700px){h1{font-size:26px} .en{font-size:18px}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-inner">
+    <div class="title-row">
+      <div>
+        <h1>⚽ 축구 구단 의전 영어</h1>
+        <div class="subtitle">문장을 누르면 뜻과 핵심 단어가 나옵니다.</div>
+      </div>
+      <button class="icon-btn" id="helpBtn" aria-label="사용 안내">?</button>
+    </div>
+    <div class="search">
+      <input id="searchInput" type="search" placeholder="영어·한글·단어 검색" autocomplete="off">
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+</header>
+
+<main>
+  <div class="install-banner" id="installBanner">홈 화면에 추가하면 앱처럼 사용할 수 있습니다.<button id="installBtn">설치</button></div>
+  <div class="stats"><span id="resultCount"></span><span>⭐ 즐겨찾기 가능</span></div>
+  <section id="list"></section>
+</main>
+
+<nav class="bottom">
+  <div class="bottom-inner">
+    <button class="nav-btn active" data-mode="all"><strong>📚</strong>전체</button>
+    <button class="nav-btn" data-mode="favorites"><strong>⭐</strong>즐겨찾기</button>
+    <button class="nav-btn" id="topBtn"><strong>⬆️</strong>맨 위로</button>
+  </div>
+</nav>
+
+<div class="modal-back" id="modalBack">
+  <div class="modal">
+    <h2>휴대폰 사용 방법</h2>
+    <p><strong>문장 보기:</strong> 영어 문장을 누르면 한글 뜻과 핵심 단어가 펼쳐집니다.</p>
+    <p><strong>발음 듣기:</strong> 🔊 버튼을 누르면 휴대폰의 영어 음성으로 문장을 읽어줍니다.</p>
+    <p><strong>즐겨찾기:</strong> ☆ 버튼을 눌러 중요한 문장만 모아볼 수 있습니다.</p>
+    <p><strong>홈 화면 추가:</strong></p>
+    <ul>
+      <li>아이폰 Safari: 공유 버튼 → ‘홈 화면에 추가’</li>
+      <li>안드로이드 Chrome: 메뉴 ⋮ → ‘홈 화면에 추가’ 또는 ‘앱 설치’</li>
+    </ul>
+    <p>파일로 직접 열어도 문장 검색·번역·즐겨찾기는 작동합니다. 정식 설치 버튼은 웹주소로 접속했을 때 지원됩니다.</p>
+    <button class="close" id="closeModal">확인</button>
+  </div>
+</div>
+
+<script>
+const DATA = [{"id": 1, "en": "Welcome to Korea.", "ko": "한국에 오신 것을 환영합니다.", "words": "welcome: 환영하다 / Korea: 한국", "category": "공항 영접", "icon": "✈️"}, {"id": 2, "en": "Welcome to Daejeon.", "ko": "대전에 오신 것을 환영합니다.", "words": "welcome: 환영하다 / Daejeon: 대전", "category": "공항 영접", "icon": "✈️"}, {"id": 3, "en": "It's a pleasure to meet you.", "ko": "만나 뵙게 되어 반갑습니다.", "words": "pleasure: 기쁨, 영광 / meet: 만나다", "category": "공항 영접", "icon": "✈️"}, {"id": 4, "en": "I hope you had a pleasant flight.", "ko": "편안한 비행이셨기를 바랍니다.", "words": "hope: 바라다 / pleasant: 편안한, 즐거운 / flight: 비행", "category": "공항 영접", "icon": "✈️"}, {"id": 5, "en": "Did you have a comfortable flight?", "ko": "비행은 편안하셨나요?", "words": "comfortable: 편안한 / flight: 비행", "category": "공항 영접", "icon": "✈️"}, {"id": 6, "en": "May I help you with your luggage?", "ko": "짐을 도와드릴까요?", "words": "help A with B: A의 B를 돕다 / luggage: 짐", "category": "공항 영접", "icon": "✈️"}, {"id": 7, "en": "Our vehicle is waiting outside.", "ko": "저희 차량이 밖에서 대기 중입니다.", "words": "vehicle: 차량 / wait: 기다리다 / outside: 밖에", "category": "공항 영접", "icon": "✈️"}, {"id": 8, "en": "This way, please.", "ko": "이쪽으로 오시죠.", "words": "this way: 이쪽으로 / please: 부디", "category": "공항 영접", "icon": "✈️"}, {"id": 9, "en": "Please watch your step.", "ko": "발밑을 조심해 주세요.", "words": "watch your step: 발밑을 조심하다", "category": "공항 영접", "icon": "✈️"}, {"id": 10, "en": "Thank you for coming.", "ko": "와주셔서 감사합니다.", "words": "thank you for ~ing: ~해주셔서 감사합니다", "category": "공항 영접", "icon": "✈️"}, {"id": 11, "en": "Please make yourself comfortable.", "ko": "편하게 계세요.", "words": "make yourself comfortable: 편하게 있다", "category": "차량 이동", "icon": "🚗"}, {"id": 12, "en": "We'll head to the hotel now.", "ko": "이제 호텔로 이동하겠습니다.", "words": "head to: ~로 향하다 / hotel: 호텔", "category": "차량 이동", "icon": "🚗"}, {"id": 13, "en": "It'll take about 30 minutes.", "ko": "약 30분 정도 걸립니다.", "words": "take: 시간이 걸리다 / about: 약", "category": "차량 이동", "icon": "🚗"}, {"id": 14, "en": "Traffic is a little heavy right now.", "ko": "현재 교통이 조금 막힙니다.", "words": "traffic: 교통 / heavy: 혼잡한 / right now: 지금", "category": "차량 이동", "icon": "🚗"}, {"id": 15, "en": "We'll arrive shortly.", "ko": "곧 도착하겠습니다.", "words": "arrive: 도착하다 / shortly: 곧", "category": "차량 이동", "icon": "🚗"}, {"id": 16, "en": "Is this your first visit to Korea?", "ko": "한국 방문은 처음이신가요?", "words": "first visit: 첫 방문", "category": "차량 이동", "icon": "🚗"}, {"id": 17, "en": "Have you been to Daejeon before?", "ko": "전에 대전에 와보신 적 있으신가요?", "words": "have been to: ~에 가본 적이 있다 / before: 전에", "category": "차량 이동", "icon": "🚗"}, {"id": 18, "en": "How long will you be staying in Korea?", "ko": "한국에 얼마나 머무르실 예정인가요?", "words": "how long: 얼마나 오래 / stay: 머무르다", "category": "차량 이동", "icon": "🚗"}, {"id": 19, "en": "Please let me know if you need anything.", "ko": "필요한 것이 있으시면 말씀해 주세요.", "words": "let me know: 알려주다 / need: 필요하다", "category": "차량 이동", "icon": "🚗"}, {"id": 20, "en": "Would you like some water?", "ko": "물 좀 드시겠습니까?", "words": "would you like: ~하시겠습니까 / water: 물", "category": "차량 이동", "icon": "🚗"}, {"id": 21, "en": "I'll help you with the check-in.", "ko": "체크인을 도와드리겠습니다.", "words": "check-in: 체크인", "category": "호텔", "icon": "🏨"}, {"id": 22, "en": "Your room is ready.", "ko": "객실이 준비되었습니다.", "words": "room: 객실 / ready: 준비된", "category": "호텔", "icon": "🏨"}, {"id": 23, "en": "Breakfast is served from 7 to 10 a.m.", "ko": "조식은 오전 7시부터 10시까지 제공됩니다.", "words": "breakfast: 조식 / be served: 제공되다", "category": "호텔", "icon": "🏨"}, {"id": 24, "en": "The elevator is over there.", "ko": "엘리베이터는 저쪽에 있습니다.", "words": "elevator: 엘리베이터 / over there: 저쪽에", "category": "호텔", "icon": "🏨"}, {"id": 25, "en": "The fitness center is on the second floor.", "ko": "피트니스센터는 2층에 있습니다.", "words": "fitness center: 피트니스센터 / second floor: 2층", "category": "호텔", "icon": "🏨"}, {"id": 26, "en": "Your luggage will be brought to your room.", "ko": "짐은 객실로 가져다드리겠습니다.", "words": "be brought: 가져다지다 / luggage: 짐", "category": "호텔", "icon": "🏨"}, {"id": 27, "en": "Please let us know if you need anything.", "ko": "필요한 것이 있으시면 저희에게 말씀해 주세요.", "words": "let us know: 저희에게 알려주다", "category": "호텔", "icon": "🏨"}, {"id": 28, "en": "We'll meet in the lobby at 10 a.m.", "ko": "오전 10시에 로비에서 뵙겠습니다.", "words": "meet: 만나다 / lobby: 로비", "category": "호텔", "icon": "🏨"}, {"id": 29, "en": "We'll leave shortly.", "ko": "곧 출발하겠습니다.", "words": "leave: 출발하다 / shortly: 곧", "category": "호텔", "icon": "🏨"}, {"id": 30, "en": "Have a good rest.", "ko": "편히 쉬세요.", "words": "rest: 휴식", "category": "호텔", "icon": "🏨"}, {"id": 31, "en": "Welcome to Daejeon World Cup Stadium.", "ko": "대전월드컵경기장에 오신 것을 환영합니다.", "words": "stadium: 경기장", "category": "경기장", "icon": "🏟️"}, {"id": 32, "en": "Would you like me to show you around?", "ko": "제가 둘러보시도록 안내해드릴까요?", "words": "show someone around: 둘러보게 안내하다", "category": "경기장", "icon": "🏟️"}, {"id": 33, "en": "This is our VIP Lounge.", "ko": "여기는 저희 VIP 라운지입니다.", "words": "VIP lounge: VIP 라운지", "category": "경기장", "icon": "🏟️"}, {"id": 34, "en": "This is the home dressing room.", "ko": "여기는 홈팀 라커룸입니다.", "words": "home dressing room: 홈팀 라커룸", "category": "경기장", "icon": "🏟️"}, {"id": 35, "en": "This is the away dressing room.", "ko": "여기는 원정팀 라커룸입니다.", "words": "away dressing room: 원정팀 라커룸", "category": "경기장", "icon": "🏟️"}, {"id": 36, "en": "This is the mixed zone.", "ko": "여기는 믹스트존입니다.", "words": "mixed zone: 선수·언론 인터뷰 구역", "category": "경기장", "icon": "🏟️"}, {"id": 37, "en": "This is the media room.", "ko": "여기는 미디어실입니다.", "words": "media room: 미디어실", "category": "경기장", "icon": "🏟️"}, {"id": 38, "en": "This is the press conference room.", "ko": "여기는 기자회견실입니다.", "words": "press conference room: 기자회견실", "category": "경기장", "icon": "🏟️"}, {"id": 39, "en": "This is the players' tunnel.", "ko": "여기는 선수 입장 통로입니다.", "words": "players' tunnel: 선수 입장 통로", "category": "경기장", "icon": "🏟️"}, {"id": 40, "en": "This is the team bench.", "ko": "여기는 팀 벤치입니다.", "words": "team bench: 팀 벤치", "category": "경기장", "icon": "🏟️"}, {"id": 41, "en": "Please follow me.", "ko": "저를 따라오세요.", "words": "follow: 따라오다", "category": "경기장", "icon": "🏟️"}, {"id": 42, "en": "Watch your step.", "ko": "발밑 조심하세요.", "words": "watch your step: 발밑을 조심하다", "category": "경기장", "icon": "🏟️"}, {"id": 43, "en": "We have about 20 minutes.", "ko": "약 20분 정도 시간이 있습니다.", "words": "about: 약 / minute: 분", "category": "경기장", "icon": "🏟️"}, {"id": 44, "en": "The match will begin shortly.", "ko": "경기가 곧 시작됩니다.", "words": "match: 경기 / begin: 시작하다 / shortly: 곧", "category": "경기장", "icon": "🏟️"}, {"id": 45, "en": "Your seats are ready.", "ko": "좌석이 준비되어 있습니다.", "words": "seat: 좌석 / ready: 준비된", "category": "경기장", "icon": "🏟️"}, {"id": 46, "en": "Would you like some coffee or tea?", "ko": "커피나 차 드시겠습니까?", "words": "coffee: 커피 / tea: 차", "category": "식사·휴식", "icon": "☕"}, {"id": 47, "en": "Would you prefer it hot or iced?", "ko": "따뜻한 것과 차가운 것 중 어떤 것을 원하시나요?", "words": "prefer: 선호하다 / hot: 따뜻한 / iced: 차가운", "category": "식사·휴식", "icon": "☕"}, {"id": 48, "en": "Please enjoy your meal.", "ko": "맛있게 드세요.", "words": "enjoy your meal: 맛있게 드세요", "category": "식사·휴식", "icon": "☕"}, {"id": 49, "en": "Do you have any dietary restrictions?", "ko": "식이 제한이 있으신가요?", "words": "dietary restrictions: 식이 제한", "category": "식사·휴식", "icon": "☕"}, {"id": 50, "en": "Are there any foods you don't eat?", "ko": "드시지 않는 음식이 있으신가요?", "words": "food: 음식", "category": "식사·휴식", "icon": "☕"}, {"id": 51, "en": "Our General Manager would like to recommend a restaurant.", "ko": "저희 단장님께서 식당을 추천해드리고 싶어 하십니다.", "words": "General Manager: 단장 / recommend: 추천하다 / restaurant: 식당", "category": "식사·휴식", "icon": "☕"}, {"id": 52, "en": "Would you like to have dinner with our executives?", "ko": "저희 임원진과 저녁 식사하시겠습니까?", "words": "have dinner: 저녁을 먹다 / executives: 임원진", "category": "식사·휴식", "icon": "☕"}, {"id": 53, "en": "This is a local specialty.", "ko": "이것은 이 지역의 명물입니다.", "words": "local specialty: 지역 명물", "category": "식사·휴식", "icon": "☕"}, {"id": 54, "en": "Please help yourself.", "ko": "편하게 드세요.", "words": "help yourself: 마음껏 드세요", "category": "식사·휴식", "icon": "☕"}, {"id": 55, "en": "If you need anything, please let me know.", "ko": "필요하신 것이 있으면 말씀해 주세요.", "words": "need: 필요하다 / let me know: 알려주다", "category": "식사·휴식", "icon": "☕"}, {"id": 56, "en": "I'll bring it to you.", "ko": "가져다드리겠습니다.", "words": "bring: 가져오다", "category": "식사·휴식", "icon": "☕"}, {"id": 57, "en": "I'll get your drink.", "ko": "음료를 가져다드리겠습니다.", "words": "get: 가져오다 / drink: 음료", "category": "식사·휴식", "icon": "☕"}, {"id": 58, "en": "Would you like some more coffee?", "ko": "커피를 더 드시겠습니까?", "words": "some more: 조금 더", "category": "식사·휴식", "icon": "☕"}, {"id": 59, "en": "Please take your time.", "ko": "천천히 하세요.", "words": "take your time: 서두르지 않다", "category": "식사·휴식", "icon": "☕"}, {"id": 60, "en": "I hope you enjoy it.", "ko": "마음에 드셨으면 좋겠습니다.", "words": "hope: 바라다 / enjoy: 즐기다", "category": "식사·휴식", "icon": "☕"}, {"id": 61, "en": "This is a small gift from our General Manager.", "ko": "이것은 저희 단장님께서 준비하신 작은 선물입니다.", "words": "small gift: 작은 선물", "category": "선물", "icon": "🎁"}, {"id": 62, "en": "Our General Manager prepared this gift for you.", "ko": "저희 단장님께서 당신을 위해 이 선물을 준비하셨습니다.", "words": "prepare: 준비하다 / gift: 선물", "category": "선물", "icon": "🎁"}, {"id": 63, "en": "It's from Seongsimdang, a famous bakery in Daejeon.", "ko": "대전의 유명한 빵집인 성심당에서 준비한 것입니다.", "words": "famous: 유명한 / bakery: 빵집", "category": "선물", "icon": "🎁"}, {"id": 64, "en": "We hope you like it.", "ko": "마음에 드셨으면 좋겠습니다.", "words": "hope: 바라다 / like: 마음에 들어하다", "category": "선물", "icon": "🎁"}, {"id": 65, "en": "We hope you enjoy it.", "ko": "맛있게 드셨으면 좋겠습니다.", "words": "enjoy: 즐기다, 맛있게 먹다", "category": "선물", "icon": "🎁"}, {"id": 66, "en": "Thank you for visiting us.", "ko": "저희를 방문해 주셔서 감사합니다.", "words": "visit: 방문하다", "category": "선물", "icon": "🎁"}, {"id": 67, "en": "It's our pleasure.", "ko": "저희가 오히려 기쁩니다.", "words": "our pleasure: 저희의 기쁨입니다", "category": "선물", "icon": "🎁"}, {"id": 68, "en": "We hope you'll have a great stay.", "ko": "즐거운 체류가 되시길 바랍니다.", "words": "stay: 체류 / great: 좋은", "category": "선물", "icon": "🎁"}, {"id": 69, "en": "Thank you for your support.", "ko": "지원해 주셔서 감사합니다.", "words": "support: 지원", "category": "선물", "icon": "🎁"}, {"id": 70, "en": "We appreciate your visit.", "ko": "방문해 주셔서 감사드립니다.", "words": "appreciate: 감사히 여기다", "category": "선물", "icon": "🎁"}, {"id": 71, "en": "Would you like me to take a photo?", "ko": "사진 찍어드릴까요?", "words": "take a photo: 사진을 찍다", "category": "사진·행사", "icon": "📸"}, {"id": 72, "en": "Shall we take a group photo?", "ko": "단체 사진을 찍을까요?", "words": "shall we: ~할까요 / group photo: 단체 사진", "category": "사진·행사", "icon": "📸"}, {"id": 73, "en": "Everyone, this way please.", "ko": "모두 이쪽을 봐주세요.", "words": "everyone: 모두 / this way: 이쪽", "category": "사진·행사", "icon": "📸"}, {"id": 74, "en": "One more photo, please.", "ko": "사진 한 장 더 찍겠습니다.", "words": "one more: 하나 더", "category": "사진·행사", "icon": "📸"}, {"id": 75, "en": "Smile!", "ko": "웃어주세요!", "words": "smile: 웃다", "category": "사진·행사", "icon": "📸"}, {"id": 76, "en": "Thank you.", "ko": "감사합니다.", "words": "thank you: 감사합니다", "category": "사진·행사", "icon": "📸"}, {"id": 77, "en": "Perfect.", "ko": "좋습니다.", "words": "perfect: 완벽한, 아주 좋은", "category": "사진·행사", "icon": "📸"}, {"id": 78, "en": "Let's take one more.", "ko": "한 장 더 찍겠습니다.", "words": "let's: ~합시다 / one more: 하나 더", "category": "사진·행사", "icon": "📸"}, {"id": 79, "en": "Please look this way.", "ko": "이쪽을 봐주세요.", "words": "look this way: 이쪽을 보다", "category": "사진·행사", "icon": "📸"}, {"id": 80, "en": "Great!", "ko": "좋습니다!", "words": "great: 훌륭한", "category": "사진·행사", "icon": "📸"}, {"id": 81, "en": "Kick-off is at 7:30 p.m.", "ko": "킥오프는 오후 7시 30분입니다.", "words": "kick-off: 경기 시작", "category": "경기 전후", "icon": "⚽"}, {"id": 82, "en": "We have about 30 minutes before the match.", "ko": "경기 시작 전까지 약 30분 남았습니다.", "words": "before the match: 경기 전", "category": "경기 전후", "icon": "⚽"}, {"id": 83, "en": "The players are warming up.", "ko": "선수들이 몸을 풀고 있습니다.", "words": "warm up: 몸을 풀다", "category": "경기 전후", "icon": "⚽"}, {"id": 84, "en": "The match will begin shortly.", "ko": "경기가 곧 시작됩니다.", "words": "begin: 시작하다 / shortly: 곧", "category": "경기 전후", "icon": "⚽"}, {"id": 85, "en": "After the match, we'll head straight to the airport.", "ko": "경기 후 바로 공항으로 이동하겠습니다.", "words": "head straight to: 곧장 ~로 가다 / airport: 공항", "category": "경기 전후", "icon": "⚽"}, {"id": 86, "en": "We'll leave for the airport immediately after the match.", "ko": "경기 직후 공항으로 출발하겠습니다.", "words": "immediately: 즉시", "category": "경기 전후", "icon": "⚽"}, {"id": 87, "en": "Your vehicle will be waiting outside.", "ko": "차량이 밖에서 대기할 예정입니다.", "words": "vehicle: 차량 / wait: 대기하다", "category": "경기 전후", "icon": "⚽"}, {"id": 88, "en": "Please follow me.", "ko": "저를 따라오세요.", "words": "follow: 따라오다", "category": "경기 전후", "icon": "⚽"}, {"id": 89, "en": "We'll depart in about five minutes.", "ko": "약 5분 후 출발하겠습니다.", "words": "depart: 출발하다", "category": "경기 전후", "icon": "⚽"}, {"id": 90, "en": "Thank you for your patience.", "ko": "기다려 주셔서 감사합니다.", "words": "patience: 인내, 기다려줌", "category": "경기 전후", "icon": "⚽"}, {"id": 91, "en": "It was a pleasure meeting you.", "ko": "만나 뵙게 되어 반가웠습니다.", "words": "pleasure: 기쁨 / meeting you: 만나 뵙는 것", "category": "배웅", "icon": "👋"}, {"id": 92, "en": "Thank you very much for visiting us.", "ko": "저희를 방문해 주셔서 정말 감사합니다.", "words": "very much: 매우", "category": "배웅", "icon": "👋"}, {"id": 93, "en": "We hope to see you again.", "ko": "다시 뵙기를 바랍니다.", "words": "see you again: 다시 만나다", "category": "배웅", "icon": "👋"}, {"id": 94, "en": "Have a safe trip home.", "ko": "조심히 돌아가세요.", "words": "safe trip: 안전한 여행", "category": "배웅", "icon": "👋"}, {"id": 95, "en": "Have a safe flight.", "ko": "안전한 비행 되세요.", "words": "safe flight: 안전한 비행", "category": "배웅", "icon": "👋"}, {"id": 96, "en": "We look forward to welcoming you again.", "ko": "다시 모실 날을 기대하겠습니다.", "words": "look forward to: 기대하다 / welcome: 맞이하다", "category": "배웅", "icon": "👋"}, {"id": 97, "en": "Thank you for your cooperation.", "ko": "협조해 주셔서 감사합니다.", "words": "cooperation: 협조", "category": "배웅", "icon": "👋"}, {"id": 98, "en": "It was an honor to have you here.", "ko": "모실 수 있어 영광이었습니다.", "words": "honor: 영광", "category": "배웅", "icon": "👋"}, {"id": 99, "en": "Take care.", "ko": "조심히 가세요.", "words": "take care: 잘 지내다, 조심하다", "category": "배웅", "icon": "👋"}, {"id": 100, "en": "See you again soon.", "ko": "곧 다시 뵙겠습니다.", "words": "soon: 곧", "category": "배웅", "icon": "👋"}];
+const categories = ["전체", ...new Set(DATA.map(x => x.icon+" "+x.category))];
+let category = "전체";
+let mode = "all";
+let query = "";
+let deferredPrompt = null;
+let favorites = new Set(JSON.parse(localStorage.getItem("protocolFavorites") || "[]"));
+
+const list = document.getElementById("list");
+const chips = document.getElementById("chips");
+const resultCount = document.getElementById("resultCount");
+
+function saveFavorites() {
+  localStorage.setItem("protocolFavorites", JSON.stringify([...favorites]));
+}
+
+function renderChips() {
+  chips.innerHTML = categories.map(c => `<button class="chip ${c===category?'active':''}" data-cat="${c}">${c}</button>`).join("");
+  chips.querySelectorAll(".chip").forEach(btn => btn.onclick = () => {
+    category = btn.dataset.cat; renderChips(); render();
+  });
+}
+
+function filtered() {
+  return DATA.filter(x => {
+    const catLabel = x.icon+" "+x.category;
+    const catOk = category === "전체" || catLabel === category;
+    const favOk = mode !== "favorites" || favorites.has(x.id);
+    const hay = (x.en+" "+x.ko+" "+x.words+" "+x.category).toLowerCase();
+    return catOk && favOk && hay.includes(query.toLowerCase());
+  });
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return alert("이 기기에서는 음성 재생을 지원하지 않습니다.");
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "en-US"; u.rate = 0.86;
+  speechSynthesis.speak(u);
+}
+
+function render() {
+  const data = filtered();
+  resultCount.textContent = `${data.length}개 문장`;
+  if (!data.length) {
+    list.innerHTML = `<div class="empty">검색 결과가 없습니다.</div>`;
+    return;
+  }
+  list.innerHTML = data.map(x => `
+    <article class="card" data-id="${x.id}">
+      <div class="card-top">
+        <div>
+          <div class="meta">${x.icon} ${x.category} · ${x.id}</div>
+          <div class="en">${escapeHtml(x.en)}</div>
+          <div class="tap-hint">눌러서 뜻 보기</div>
+        </div>
+        <div class="actions">
+          <button class="small-btn speak" title="발음 듣기">🔊</button>
+          <button class="small-btn fav ${favorites.has(x.id)?'starred':''}" title="즐겨찾기">${favorites.has(x.id)?'★':'☆'}</button>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="ko">${escapeHtml(x.ko)}</div>
+        <div class="words"><strong>핵심 단어</strong><br>${escapeHtml(x.words)}</div>
+      </div>
+    </article>`).join("");
+
+  list.querySelectorAll(".card").forEach(card => {
+    const id = Number(card.dataset.id);
+    const item = DATA.find(x => x.id === id);
+    card.querySelector(".card-top").onclick = e => {
+      if (e.target.closest("button")) return;
+      card.classList.toggle("open");
+    };
+    card.querySelector(".speak").onclick = e => { e.stopPropagation(); speak(item.en); };
+    card.querySelector(".fav").onclick = e => {
+      e.stopPropagation();
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      saveFavorites(); render();
+    };
+  });
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[m]);
+}
+
+document.getElementById("searchInput").addEventListener("input", e => { query=e.target.value.trim(); render(); });
+document.querySelectorAll(".nav-btn[data-mode]").forEach(btn => btn.onclick = () => {
+  mode = btn.dataset.mode;
+  document.querySelectorAll(".nav-btn[data-mode]").forEach(b=>b.classList.toggle("active",b===btn));
+  render();
+});
+document.getElementById("topBtn").onclick = () => window.scrollTo({top:0,behavior:"smooth"});
+
+const modalBack = document.getElementById("modalBack");
+document.getElementById("helpBtn").onclick = () => modalBack.classList.add("show");
+document.getElementById("closeModal").onclick = () => modalBack.classList.remove("show");
+modalBack.onclick = e => { if(e.target===modalBack) modalBack.classList.remove("show"); };
+
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); deferredPrompt=e;
+  document.getElementById("installBanner").style.display="block";
+});
+document.getElementById("installBtn").onclick = async () => {
+  if(!deferredPrompt) return;
+  deferredPrompt.prompt(); await deferredPrompt.userChoice;
+  deferredPrompt=null; document.getElementById("installBanner").style.display="none";
+};
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+}
+renderChips(); render();
+</script>
+</body>
+</html>

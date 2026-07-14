@@ -1,0 +1,17 @@
+{
+  "name": "축구 구단 의전 영어",
+  "short_name": "의전 영어",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f5f7",
+  "theme_color": "#151515",
+  "description": "축구 구단 국제업무 및 의전 영어 100문장",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
